@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
+using SSCMS.Advertisement.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -33,7 +34,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList([FromQuery] ListRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Core.AdvertisementUtils.PermissionsList))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsList))
             {
                 return Unauthorized();
             }
@@ -107,7 +108,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Core.AdvertisementUtils.PermissionsList))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsList))
             {
                 return Unauthorized();
             }

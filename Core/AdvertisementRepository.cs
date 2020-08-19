@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Advertisement.Abstractions;
-using SSCMS.Advertisement.Core;
 using SSCMS.Advertisement.Models;
+using SSCMS.Advertisement.Utils;
+using SSCMS.Context;
 using SSCMS.Services;
 
-namespace SSCMS.Advertisement.Implements
+namespace SSCMS.Advertisement.Core
 {
     public class AdvertisementRepository : IAdvertisementRepository
     {
@@ -67,7 +68,7 @@ namespace SSCMS.Advertisement.Implements
             return advertisements.Where(x => x.AdvertisementType == advertisementType).ToList();
         }
 
-        public async Task AddAdvertisementsAsync(IStlParseContext context)
+        public async Task AddAdvertisementsAsync(IParseContext context)
         {
             var advertisements = await GetAllAsync(context.SiteId);
             var plugin = _pluginManager.Current;
@@ -79,7 +80,7 @@ namespace SSCMS.Advertisement.Implements
                 var scripts = string.Empty;
                 if (advertisement.AdvertisementType == AdvertisementType.FloatImage)
                 {
-                    context.HeadCodes[plugin.PluginId] = @"<script type=""text/javascript"" src=""/assets/adFloating.js""></script>";
+                    context.HeadCodes[plugin.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlAdFloating}""></script>";
 
                     var floatScript = new ScriptFloating(advertisement);
                     scripts = floatScript.GetScript();
@@ -88,7 +89,7 @@ namespace SSCMS.Advertisement.Implements
                 {
                     if (!context.HeadCodes.ContainsKey("Jquery"))
                     {
-                        context.HeadCodes[plugin.PluginId] = @"<script type=""text/javascript"" src=""/assets/jquery-1.9.1.min.js""></script>";
+                        context.HeadCodes[plugin.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlJquery}""></script>";
                     }
 
                     var screenDownScript = new ScriptScreenDown(advertisement);

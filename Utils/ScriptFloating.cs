@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using SSCMS.Advertisement.Models;
 
-namespace SSCMS.Advertisement.Core
+namespace SSCMS.Advertisement.Utils
 {
     public class ScriptFloating
     {
@@ -14,7 +14,6 @@ namespace SSCMS.Advertisement.Core
 
         public string GetScript()
         {
-            var closeUrl = "/assets/close.gif";
             var linkUrl = _advertisement.NavigationUrl;
             var imageUrl = _advertisement.ImageUrl;
 
@@ -23,7 +22,7 @@ namespace SSCMS.Advertisement.Core
 
             var closeDiv = _advertisement.IsCloseable
                 ? $@"
-<div class=""ads-float-close"" style=""width: {width}px; height: 18px; position: absolute; left: 0px; top: {height}px; background: url(&quot;{closeUrl}&quot;) right center no-repeat rgb(235, 235, 235); cursor: pointer;"" onclick=""document.getElementById('ad_{_advertisement.Id}').style.display = 'none';""></div>
+<div class=""ads-float-close"" style=""width: {width}px; height: 18px; position: absolute; left: 0px; top: {height}px; background: url(&quot;{AdvertisementUtils.AssetsUrlClose}&quot;) right center no-repeat rgb(235, 235, 235); cursor: pointer;"" onclick=""document.getElementById('ad_{_advertisement.Id}').style.display = 'none';""></div>
 "
                 : string.Empty;
 

@@ -1,16 +1,21 @@
 ﻿using System;
+using SSCMS.Context;
 using SSCMS.Enums;
 using SSCMS.Utils;
 using ScopeType = SSCMS.Advertisement.Models.ScopeType;
 
-namespace SSCMS.Advertisement.Core
+namespace SSCMS.Advertisement.Utils
 {
     public static class AdvertisementUtils
     {
         public const string PermissionsAdd = "advertisement_add";
         public const string PermissionsList = "advertisement_list";
 
-        public static bool IsAdvertisement(IStlParseContext context, Models.Advertisement advertisement)
+        public const string AssetsUrlClose = "/assets/advertisement/close.gif";
+        public const string AssetsUrlAdFloating = "/assets/advertisement/adFloating.js";
+        public const string AssetsUrlJquery = "/assets/advertisement/jquery-1.9.1.min.js";
+
+        public static bool IsAdvertisement(IParseContext context, Models.Advertisement advertisement)
         {
             if (advertisement.IsDateLimited)
             {

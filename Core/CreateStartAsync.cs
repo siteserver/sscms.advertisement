@@ -1,18 +1,19 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Advertisement.Abstractions;
+using SSCMS.Context;
 using SSCMS.Plugins;
 
-namespace SSCMS.Advertisement.Implements
+namespace SSCMS.Advertisement.Core
 {
-    public class PluginBeforeStlParseAsync : IPluginBeforeStlParseAsync
+    public class CreateStartAsync : IPluginCreateStartAsync
     {
         private readonly IAdvertisementRepository _advertisementRepository;
-        public PluginBeforeStlParseAsync(IAdvertisementRepository advertisementRepository)
+        public CreateStartAsync(IAdvertisementRepository advertisementRepository)
         {
             _advertisementRepository = advertisementRepository;
         }
 
-        public async Task BeforeStlParseAsync(IStlParseContext context)
+        public async Task ParseAsync(IParseContext context)
         {
             await _advertisementRepository.AddAdvertisementsAsync(context);
         }

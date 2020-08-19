@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Advertisement.Models;
+using SSCMS.Context;
 
 namespace SSCMS.Advertisement.Abstractions
 {
@@ -20,6 +21,6 @@ namespace SSCMS.Advertisement.Abstractions
 
         Task<List<Models.Advertisement>> GetAllAsync(int siteId, AdvertisementType advertisementType);
 
-        Task AddAdvertisementsAsync(IStlParseContext context);
+        Task AddAdvertisementsAsync(IParseContext context);
     }
 }

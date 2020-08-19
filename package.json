@@ -19,24 +19,24 @@
     "url": "https://github.com/siteserver/sscms.advertisement"
   },
   "icon": "/ss-admin/advertisement/logo.svg",
-  "output": "bin/Release/netcoreapp3.1/publish",
+  "output": "bin/Release/netcoreapp3.1",
   "main": "SSCMS.Advertisement.dll",
   "extensions": {
     "permissions": {
       "advertisement_add": {
         "text": "添加广告",
-        "type": "site"
+        "type": ["web", "wx"]
       },
       "advertisement_list": {
         "text": "广告列表",
-        "type": "site"
+        "type": ["web", "wx"]
       }
     },
     "menus": {
       "advertisement_all": {
         "text": "广告管理",
         "iconClass": "fa fa-mouse-pointer",
-        "type": "site",
+        "type": ["web", "wx"],
         "permissions": [
           "advertisement_add",
           "advertisement_list"

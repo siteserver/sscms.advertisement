@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Advertisement.Abstractions;
+using SSCMS.Advertisement.Core;
 using SSCMS.Plugins;
 
-namespace SSCMS.Advertisement.Implements
+namespace SSCMS.Advertisement
 {
-    public class PluginConfigureServices : IPluginConfigureServices
+    public class Startup : IPluginConfigureServices
     {
         public void ConfigureServices(IServiceCollection services)
         {

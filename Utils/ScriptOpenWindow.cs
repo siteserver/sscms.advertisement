@@ -1,4 +1,4 @@
-namespace SSCMS.Advertisement.Core
+namespace SSCMS.Advertisement.Utils
 {
 	public class ScriptOpenWindow
 	{

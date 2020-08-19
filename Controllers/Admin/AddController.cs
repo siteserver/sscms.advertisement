@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
+using SSCMS.Advertisement.Utils;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -43,7 +44,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Core.AdvertisementUtils.PermissionsAdd))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
             {
                 return Unauthorized();
             }
@@ -99,7 +100,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
         [HttpPost, Route(RouteActionsUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Core.AdvertisementUtils.PermissionsAdd))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
             {
                 return Unauthorized();
             }
@@ -146,7 +147,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Core.AdvertisementUtils.PermissionsAdd))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
             {
                 return Unauthorized();
             }
@@ -160,7 +161,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
             {
                 if (await _advertisementRepository.IsExistsAsync(request.AdvertisementName, request.SiteId))
                 {
-                    return BadRequest("保存失败，已存在相同名称的广告！");
+                    return this.Error("保存失败，已存在相同名称的广告！");
                 }
 
                 advertisement = new Models.Advertisement();

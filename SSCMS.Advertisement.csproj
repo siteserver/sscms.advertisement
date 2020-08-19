@@ -10,6 +10,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
     <ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" />
     <Content Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="README.md" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
