@@ -5,7 +5,7 @@ using Datory;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
 using SSCMS.Advertisement.Utils;
-using SSCMS.Context;
+using SSCMS.Parse;
 using SSCMS.Services;
 
 namespace SSCMS.Advertisement.Core

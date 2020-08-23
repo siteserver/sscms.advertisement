@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Advertisement.Models;
-using SSCMS.Context;
+using SSCMS.Parse;
 
 namespace SSCMS.Advertisement.Abstractions
 {

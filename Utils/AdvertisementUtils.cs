@@ -1,6 +1,6 @@
 ﻿using System;
-using SSCMS.Context;
 using SSCMS.Enums;
+using SSCMS.Parse;
 using SSCMS.Utils;
 using ScopeType = SSCMS.Advertisement.Models.ScopeType;
 

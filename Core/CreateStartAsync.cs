@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Advertisement.Abstractions;
-using SSCMS.Context;
+using SSCMS.Parse;
 using SSCMS.Plugins;
 
 namespace SSCMS.Advertisement.Core

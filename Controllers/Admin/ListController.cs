@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
 using SSCMS.Advertisement.Utils;
+using SSCMS.Configuration;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Controllers.Admin
 {
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ListController : ControllerBase
     {

@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.ImageSharp;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
 using SSCMS.Advertisement.Utils;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -16,7 +16,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Controllers.Admin
 {
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AddController : ControllerBase
     {
@@ -127,14 +127,8 @@ namespace SSCMS.Advertisement.Controllers.Admin
             await _pathManager.UploadAsync(file, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-            int width;
-            int height;
 
-            using (var image = Image.Load(filePath))
-            {
-                width = image.Width;
-                height = image.Height;
-            }
+            var (width, height) = _pathManager.GetImageSize(filePath);
 
             return new UploadResult
             {
