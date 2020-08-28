@@ -8,6 +8,7 @@ namespace SSCMS.Advertisement.Utils
 {
     public static class AdvertisementUtils
     {
+        public const string PluginId = "sscms.advertisement";
         public const string PermissionsAdd = "advertisement_add";
         public const string PermissionsList = "advertisement_list";
 

@@ -12,13 +12,11 @@ namespace SSCMS.Advertisement.Core
 {
     public class AdvertisementRepository : IAdvertisementRepository
     {
-        private readonly IPluginManager _pluginManager;
         private readonly Repository<Models.Advertisement> _repository;
 
-        public AdvertisementRepository(ISettingsManager settingsManager, IPluginManager pluginManager)
+        public AdvertisementRepository(ISettingsManager settingsManager)
         {
             _repository = new Repository<Models.Advertisement>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
-            _pluginManager = pluginManager;
         }
 
         private static string GetCacheKey(int siteId)
@@ -71,7 +69,6 @@ namespace SSCMS.Advertisement.Core
         public async Task AddAdvertisementsAsync(IParseContext context)
         {
             var advertisements = await GetAllAsync(context.SiteId);
-            var plugin = _pluginManager.Current;
 
             foreach (var advertisement in advertisements)
             {
@@ -80,7 +77,7 @@ namespace SSCMS.Advertisement.Core
                 var scripts = string.Empty;
                 if (advertisement.AdvertisementType == AdvertisementType.FloatImage)
                 {
-                    context.HeadCodes[plugin.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlAdFloating}""></script>";
+                    context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlAdFloating}""></script>";
 
                     var floatScript = new ScriptFloating(advertisement);
                     scripts = floatScript.GetScript();
@@ -89,7 +86,7 @@ namespace SSCMS.Advertisement.Core
                 {
                     if (!context.HeadCodes.ContainsKey("Jquery"))
                     {
-                        context.HeadCodes[plugin.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlJquery}""></script>";
+                        context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlJquery}""></script>";
                     }
 
                     var screenDownScript = new ScriptScreenDown(advertisement);
@@ -101,7 +98,7 @@ namespace SSCMS.Advertisement.Core
                     scripts = openWindowScript.GetScript();
                 }
 
-                context.BodyCodes[$"{plugin.PluginId}_{advertisement.Id}"] = scripts;
+                context.BodyCodes[$"{AdvertisementUtils.PluginId}_{advertisement.Id}"] = scripts;
             }
         }
     }

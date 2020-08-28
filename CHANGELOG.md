@@ -1,3 +1,6 @@
+## 1.0.3
+* 解决广告插件不能应用到页面问题
+
 ## 1.0.2
 * 删除SixLabors.ImageSharp包，采用PathManager接口处理图片
 
