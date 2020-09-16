@@ -45,7 +45,7 @@ namespace SSCMS.Advertisement.Utils
             }
 
             var builder = new StringBuilder($@"
-<div id=""ad_{_advertisement.Id}"" class=""ads-float ads-float-left"" style=""position: fixed; width: {width}px; height: {height}px; z-index: 10500; display: block; {position}""><div style=""width: {width}px; height: {height}px; position: absolute; left: 0px; top: 0px;""><a href=""{linkUrl}"" target=""_blank""><img src=""{imageUrl}"" width=""100%"" height=""100%"" border=""0""></a></div>{closeDiv}</div>
+<div id=""ad_{_advertisement.Id}"" class=""ads-float ads-float-left"" style=""position: fixed; width: {width}px; height: {height}px; z-index: 10500; display: block; {position}""><div style=""width: {width}px; height: {height}px; position: absolute; left: 0px; top: 0px;""><a href=""{linkUrl}"" target=""_blank""><img src=""{imageUrl}"" style=""width: {width}px; height: {height}px; "" border=""0""></a></div>{closeDiv}</div>
 ");
 
             var type = 1;

@@ -6,11 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
-using SSCMS.Advertisement.Utils;
 using SSCMS.Configuration;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Controllers.Admin
 {
@@ -32,42 +30,28 @@ namespace SSCMS.Advertisement.Controllers.Admin
             _advertisementRepository = advertisementRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ListResult>> GetList([FromQuery] ListRequest request)
+        public class GetRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsList))
-            {
-                return Unauthorized();
-            }
+            public int SiteId { get; set; }
+            public string AdvertisementType { get; set; }
+        }
 
-            var types = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>(string.Empty, "<所有类型>"),
-                    new KeyValuePair<string, string>(AdvertisementType.FloatImage.GetValue(),
-                        AdvertisementType.FloatImage.GetDisplayName()),
-                    new KeyValuePair<string, string>(AdvertisementType.ScreenDown.GetValue(),
-                        AdvertisementType.ScreenDown.GetDisplayName()),
-                    new KeyValuePair<string, string>(AdvertisementType.OpenWindow.GetValue(),
-                        AdvertisementType.OpenWindow.GetDisplayName())
-                };
+        public class GetResult
+        {
+            public List<Models.Advertisement> Advertisements { get; set; }
+            public List<KeyValuePair<string, string>> Types { get; set; }
+        }
 
-            var advertisements = string.IsNullOrEmpty(request.AdvertisementType)
-                ? await _advertisementRepository.GetAllAsync(request.SiteId)
-                : await _advertisementRepository.GetAllAsync(request.SiteId,
-                    TranslateUtils.ToEnum(request.AdvertisementType, AdvertisementType.FloatImage));
+        public class DeleteRequest
+        {
+            public int SiteId { get; set; }
+            public int AdvertisementId { get; set; }
+            public string AdvertisementType { get; set; }
+        }
 
-            foreach (var advertisement in advertisements)
-            {
-                advertisement.Set("display", await GetDisplayAsync(request.SiteId, advertisement));
-                advertisement.Set("scope", advertisement.ScopeType.GetDisplayName());
-                advertisement.Set("type", advertisement.AdvertisementType.GetDisplayName());
-            }
-
-            return new ListResult
-            {
-                Advertisements = advertisements,
-                Types = types
-            };
+        public class DeleteResult
+        {
+            public List<Models.Advertisement> Advertisements { get; set; }
         }
 
         private async Task<string> GetDisplayAsync(int siteId, Models.Advertisement ad)
@@ -104,34 +88,6 @@ namespace SSCMS.Advertisement.Controllers.Admin
             }
 
             return builder.Length > 0 ? $"{ad.ScopeType.GetDisplayName()} - {builder}" : ad.ScopeType.GetDisplayName();
-        }
-
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsList))
-            {
-                return Unauthorized();
-            }
-
-            await _advertisementRepository.DeleteAsync(request.SiteId, request.AdvertisementId);
-
-            var advertisements = string.IsNullOrEmpty(request.AdvertisementType)
-                ? await _advertisementRepository.GetAllAsync(request.SiteId)
-                : await _advertisementRepository.GetAllAsync(request.SiteId,
-                    TranslateUtils.ToEnum(request.AdvertisementType, AdvertisementType.FloatImage));
-
-            foreach (var advertisement in advertisements)
-            {
-                advertisement.Set("display", await GetDisplayAsync(request.SiteId, advertisement));
-                advertisement.Set("scope", advertisement.ScopeType.GetDisplayName());
-                advertisement.Set("type", advertisement.AdvertisementType.GetDisplayName());
-            }
-
-            return new DeleteResult
-            {
-                Advertisements = advertisements
-            };
         }
     }
 }

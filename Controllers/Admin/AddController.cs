@@ -1,18 +1,14 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Advertisement.Abstractions;
 using SSCMS.Advertisement.Models;
-using SSCMS.Advertisement.Utils;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Controllers.Admin
 {
@@ -41,162 +37,54 @@ namespace SSCMS.Advertisement.Controllers.Admin
             _advertisementRepository = advertisementRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
+        public class GetRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
-            {
-                return Unauthorized();
-            }
-
-            var advertisement = request.AdvertisementId > 0
-                ? await _advertisementRepository.GetAsync(request.SiteId, request.AdvertisementId)
-                : new Models.Advertisement
-                {
-                    AdvertisementType = AdvertisementType.FloatImage,
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddMonths(1),
-                    RollingType = RollingType.FollowingScreen,
-                    PositionType = PositionType.LeftTop,
-                    PositionX = 10,
-                    PositionY = 120,
-                    IsCloseable = true
-                };
-
-            var advertisementTypes = ListUtils.GetSelects<AdvertisementType>();
-            var scopeTypes = ListUtils.GetSelects<ScopeType>();
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.SiteId);
-            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
-            {
-                var count = await _contentRepository.GetCountAsync(site, summary);
-                return new
-                {
-                    Count = count
-                };
-            });
-
-            var templates = await _templateRepository.GetSummariesAsync(request.SiteId);
-
-            var positionTypes = ListUtils.GetSelects<PositionType>();
-
-            var rollingTypes = ListUtils.GetSelects<RollingType>();
-
-            return new GetResult
-            {
-                Advertisement = advertisement,
-                AdvertisementTypes = advertisementTypes,
-                ScopeTypes = scopeTypes,
-                Channels = cascade,
-                Templates = templates,
-                PositionTypes = positionTypes,
-                RollingTypes = rollingTypes
-            };
+            public int SiteId { get; set; }
+            public int AdvertisementId { get; set; }
         }
 
-        [RequestSizeLimit(long.MaxValue)]
-        [HttpPost, Route(RouteActionsUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-
-            var fileExtName = PathUtils.GetExtension(fileName).ToLower();
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
-            var localFileName = _pathManager.GetUploadFileName(site, fileName);
-            var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
-
-            if (!FileUtils.IsImage(fileExtName))
-            {
-                return this.Error("请选择有效的图片文件上传");
-            }
-
-            await _pathManager.UploadAsync(file, filePath);
-
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-
-            var (width, height) = _pathManager.GetImageSize(filePath);
-
-            return new UploadResult
-            {
-                ImageUrl = imageUrl,
-                Width = width,
-                Height = height
-            };
+            public Models.Advertisement Advertisement { get; set; }
+            public IEnumerable<Select<string>> AdvertisementTypes { get; set; }
+            public IEnumerable<Select<string>> ScopeTypes { get; set; }
+            public Cascade<int> Channels { get; set; }
+            public List<TemplateSummary> Templates { get; set; }
+            public IEnumerable<Select<string>> PositionTypes { get; set; }
+            public IEnumerable<Select<string>> RollingTypes { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
+        public class UploadResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AdvertisementUtils.PermissionsAdd))
-            {
-                return Unauthorized();
-            }
+            public string ImageUrl { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+        }
 
-            Models.Advertisement advertisement;
-            if (request.AdvertisementId > 0)
-            {
-                advertisement = await _advertisementRepository.GetAsync(request.SiteId, request.AdvertisementId);
-            }
-            else
-            {
-                if (await _advertisementRepository.IsExistsAsync(request.AdvertisementName, request.SiteId))
-                {
-                    return this.Error("保存失败，已存在相同名称的广告！");
-                }
-
-                advertisement = new Models.Advertisement();
-            }
-
-            advertisement.SiteId = request.SiteId;
-            advertisement.AdvertisementName = request.AdvertisementName;
-            advertisement.AdvertisementType = request.AdvertisementType;
-            advertisement.ScopeType = request.ScopeType;
-            advertisement.ChannelIds = request.ChannelIds;
-            advertisement.IsChannels = request.IsChannels;
-            advertisement.IsContents = request.IsContents;
-            advertisement.TemplateIds = request.TemplateIds;
-            advertisement.IsDateLimited = request.IsDateLimited;
-            advertisement.StartDate = request.StartDate;
-            advertisement.EndDate = request.EndDate;
-            advertisement.NavigationUrl = request.NavigationUrl;
-            advertisement.ImageUrl = request.ImageUrl;
-            advertisement.Width = request.Width;
-            advertisement.Height = request.Height;
-            advertisement.RollingType = request.RollingType;
-            advertisement.PositionType = request.PositionType;
-            advertisement.PositionX = request.PositionX;
-            advertisement.PositionY = request.PositionY;
-            advertisement.IsCloseable = request.IsCloseable;
-            advertisement.Delay = request.Delay;
-
-            if (advertisement.Id > 0)
-            {
-                await _advertisementRepository.UpdateAsync(advertisement);
-            }
-            else
-            {
-                await _advertisementRepository.InsertAsync(advertisement);
-            }
-
-            return new BoolResult
-            {
-                Value = true
-            };
+        public class SubmitRequest
+        {
+            public int SiteId { get; set; }
+            public int AdvertisementId { get; set; }
+            public string AdvertisementName { get; set; }
+            public AdvertisementType AdvertisementType { get; set; }
+            public ScopeType ScopeType { get; set; }
+            public List<int> ChannelIds { get; set; }
+            public bool IsChannels { get; set; }
+            public bool IsContents { get; set; }
+            public List<int> TemplateIds { get; set; }
+            public bool IsDateLimited { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+            public string NavigationUrl { get; set; }
+            public string ImageUrl { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public RollingType RollingType { get; set; }
+            public PositionType PositionType { get; set; }
+            public int PositionX { get; set; }
+            public int PositionY { get; set; }
+            public bool IsCloseable { get; set; }
+            public int Delay { get; set; }
         }
     }
 }
