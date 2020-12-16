@@ -2,17 +2,18 @@
   "name": "advertisement",
   "displayName": "广告插件",
   "description": "SSCMS 广告插件",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {
-    "sscms": "^7.0.0"
+    "sscms": "^7.0.6"
   },
   "categories": [
     "Other"
   ],
   "keywords": [
-    "内容"
+    "广告",
+    "漂浮广告"
   ],
   "repository": {
     "type": "git",

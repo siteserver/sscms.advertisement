@@ -23,7 +23,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error("请选择有效的文件上传!");
             }
 
             var fileName = Path.GetFileName(file.FileName);
@@ -33,9 +33,13 @@ namespace SSCMS.Advertisement.Controllers.Admin
             var localFileName = _pathManager.GetUploadFileName(site, fileName);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-            if (!FileUtils.IsImage(fileExtName))
+            if (!_pathManager.IsImageExtensionAllowed(site, fileExtName))
             {
-                return this.Error("请选择有效的图片文件上传");
+                return this.Error("此图片格式已被禁止上传，请转换格式后上传!");
+            }
+            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
+            {
+                return this.Error("此图片大小已超过限制，请压缩后上传!");
             }
 
             await _pathManager.UploadAsync(file, filePath);
