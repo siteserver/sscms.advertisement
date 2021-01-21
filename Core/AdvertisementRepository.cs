@@ -16,7 +16,7 @@ namespace SSCMS.Advertisement.Core
 
         public AdvertisementRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<Models.Advertisement>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Models.Advertisement>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), settingsManager.Redis);
         }
 
         private static string GetCacheKey(int siteId)
