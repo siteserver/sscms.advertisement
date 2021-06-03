@@ -1,28 +1,39 @@
 ﻿using System.Text;
 using SSCMS.Advertisement.Models;
+using System.Threading.Tasks;
+using SSCMS.Services;
+using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Utils
 {
     public class ScriptFloating
     {
+        private readonly IPathManager _pathManager;
+        private readonly Site _site;
+        private readonly string _apiUrl;
         private readonly Models.Advertisement _advertisement;
 
-        public ScriptFloating(Models.Advertisement advertisement)
+        public ScriptFloating(IPathManager pathManager, Site site, string apiUrl, Models.Advertisement advertisement)
         {
+            _pathManager = pathManager;
+            _site = site;
+            _apiUrl = apiUrl;
             _advertisement = advertisement;
         }
 
-        public string GetScript()
+        public async Task<string> GetScriptAsync()
         {
             var linkUrl = _advertisement.NavigationUrl;
-            var imageUrl = _advertisement.ImageUrl;
+            var imageUrl = await _pathManager.ParseSiteUrlAsync(_site, _advertisement.ImageUrl, false);
 
             var width = _advertisement.Width == 0 ? 160 : _advertisement.Width;
             var height = _advertisement.Height == 0 ? 600 : _advertisement.Height;
+            var closeImageUrl = PageUtils.Combine(_apiUrl, AdvertisementUtils.AssetsUrlClose);
 
             var closeDiv = _advertisement.IsCloseable
                 ? $@"
-<div class=""ads-float-close"" style=""width: {width}px; height: 18px; position: absolute; left: 0px; top: {height}px; background: url(&quot;{AdvertisementUtils.AssetsUrlClose}&quot;) right center no-repeat rgb(235, 235, 235); cursor: pointer;"" onclick=""document.getElementById('ad_{_advertisement.Id}').style.display = 'none';""></div>
+<div class=""ads-float-close"" style=""width: {width}px; height: 18px; position: absolute; left: 0px; top: {height}px; background: url(&quot;{closeImageUrl}&quot;) right center no-repeat rgb(235, 235, 235); cursor: pointer;"" onclick=""document.getElementById('ad_{_advertisement.Id}').style.display = 'none';""></div>
 "
                 : string.Empty;
 

@@ -7,15 +7,21 @@ using SSCMS.Advertisement.Models;
 using SSCMS.Advertisement.Utils;
 using SSCMS.Parse;
 using SSCMS.Services;
+using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Advertisement.Core
 {
     public class AdvertisementRepository : IAdvertisementRepository
     {
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly Repository<Models.Advertisement> _repository;
 
-        public AdvertisementRepository(ISettingsManager settingsManager)
+        public AdvertisementRepository(IPathManager pathManager, ISettingsManager settingsManager, ISiteRepository siteRepository)
         {
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
             _repository = new Repository<Models.Advertisement>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), settingsManager.Redis);
         }
 
@@ -68,6 +74,8 @@ namespace SSCMS.Advertisement.Core
 
         public async Task AddAdvertisementsAsync(IParseContext context)
         {
+            var site = await _siteRepository.GetAsync(context.SiteId);
+            var apiUrl = _pathManager.GetApiHostUrl(site);
             var advertisements = await GetAllAsync(context.SiteId);
 
             foreach (var advertisement in advertisements)
@@ -77,20 +85,20 @@ namespace SSCMS.Advertisement.Core
                 var scripts = string.Empty;
                 if (advertisement.AdvertisementType == AdvertisementType.FloatImage)
                 {
-                    context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlAdFloating}""></script>";
+                    context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{PageUtils.Combine(apiUrl, AdvertisementUtils.AssetsUrlAdFloating)}""></script>";
 
-                    var floatScript = new ScriptFloating(advertisement);
-                    scripts = floatScript.GetScript();
+                    var floatScript = new ScriptFloating(_pathManager, site, apiUrl, advertisement);
+                    scripts = await floatScript.GetScriptAsync();
                 }
                 else if (advertisement.AdvertisementType == AdvertisementType.ScreenDown)
                 {
                     if (!context.HeadCodes.ContainsKey("Jquery"))
                     {
-                        context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{AdvertisementUtils.AssetsUrlJquery}""></script>";
+                        context.HeadCodes[AdvertisementUtils.PluginId] = @$"<script type=""text/javascript"" src=""{PageUtils.Combine(apiUrl, AdvertisementUtils.AssetsUrlJquery)}""></script>";
                     }
 
-                    var screenDownScript = new ScriptScreenDown(advertisement);
-                    scripts = screenDownScript.GetScript();
+                    var screenDownScript = new ScriptScreenDown(_pathManager, site, advertisement);
+                    scripts = await screenDownScript.GetScriptAsync();
                 }
                 else if (advertisement.AdvertisementType == AdvertisementType.OpenWindow)
                 {

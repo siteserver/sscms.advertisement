@@ -11,6 +11,7 @@ var data = utils.init({
   advertisementId: utils.getQueryInt('advertisementId'),
   urlUpload: null,
   pageType: $typeBase,
+  imageType: 'upload',
   advertisement: null,
   advertisementTypes: null,
   scopeTypes: null,
