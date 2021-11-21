@@ -27,9 +27,13 @@ namespace SSCMS.Advertisement.Models
         public DateTime? EndDate { get; set; }
 
         public ScopeType ScopeType { get; set; }
+
         public List<int> ChannelIds { get; set; }
+
         public bool IsChannels { get; set; }
+
         public bool IsContents { get; set; }
+        
         public List<int> TemplateIds { get; set; }
 
         public bool IsCloseable { get; set; }

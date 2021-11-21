@@ -1,4 +1,5 @@
 var $url = '/advertisement/list';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -33,12 +34,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: $this.siteId,
-        advertisementId: item.id,
-        advertisementType: $this.advertisementType
-      }
+    $api.post($urlDelete, {
+      siteId: $this.siteId,
+      advertisementId: item.id,
+      advertisementType: $this.advertisementType
     }).then(function (response) {
       var res = response.data;
 

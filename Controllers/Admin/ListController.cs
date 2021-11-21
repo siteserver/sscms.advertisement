@@ -17,6 +17,7 @@ namespace SSCMS.Advertisement.Controllers.Admin
     public partial class ListController : ControllerBase
     {
         private const string Route = "advertisement/list";
+        private const string RouteDelete = "advertisement/list/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IChannelRepository _channelRepository;

@@ -2,11 +2,11 @@
   "name": "advertisement",
   "displayName": "广告插件",
   "description": "SSCMS 广告插件",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "license": "AGPL-3.0",
   "publisher": "sscms",
   "engines": {
-    "sscms": "^7.0.11"
+    "sscms": "^7.1.0"
   },
   "categories": [
     "Other"
@@ -27,19 +27,16 @@
   "extensions": {
     "permissions": {
       "advertisement_add": {
-        "text": "添加广告",
-        "type": ["web", "wx"]
+        "text": "添加广告"
       },
       "advertisement_list": {
-        "text": "广告列表",
-        "type": ["web", "wx"]
+        "text": "广告列表"
       }
     },
     "menus": {
       "advertisement_all": {
         "text": "广告管理",
         "iconClass": "fa fa-mouse-pointer",
-        "type": ["web", "wx"],
         "permissions": [
           "advertisement_add",
           "advertisement_list"
